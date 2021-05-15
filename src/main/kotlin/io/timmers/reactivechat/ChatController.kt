@@ -2,28 +2,24 @@ package io.timmers.reactivechat
 
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import reactor.core.publisher.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.core.publisher.Sinks
 import java.time.Instant
 
 @Controller
 class ChatController(private val timeService: TimeService) {
-    private lateinit var processor: FluxProcessor<ChatMessage, ChatMessage>
-    private lateinit var sink: FluxSink<ChatMessage>
-
-    init {
-        processor = DirectProcessor.create<ChatMessage?>().serialize();
-        sink = processor.sink();
-    }
+    private var sink: Sinks.Many<ChatMessage> = Sinks.many().multicast().onBackpressureBuffer()
 
     @MessageMapping("readMessages")
     fun readMessages(): Flux<ChatMessage> {
-        return processor.map { x -> x }
+        return sink.asFlux()
     }
 
     @MessageMapping("sendMessage")
-    fun sendMessage(message: NewChatMessage): Mono<Void> {
-        sink.next(ChatMessage(timeService.now(), message.name, message.message))
-        return Mono.empty()
+    fun sendMessage(message: NewChatMessage): Mono<Boolean> {
+        val result = sink.tryEmitNext(ChatMessage(timeService.now(), message.name, message.message))
+        return Mono.just(result.isSuccess)
     }
 }
 
