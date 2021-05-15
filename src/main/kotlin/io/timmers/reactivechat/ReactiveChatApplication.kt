@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class ReactiveChatApplication
 
 fun main(args: Array<String>) {
-	runApplication<ReactiveChatApplication>(*args)
+    runApplication<ReactiveChatApplication>(*args)
 }
