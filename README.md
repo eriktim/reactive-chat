@@ -12,5 +12,5 @@ Basic chat application based on RSocket, Kotlin & TypeScript.
 
 ```
 cd webapp
-npm run build
+npx webpack serve
 ```

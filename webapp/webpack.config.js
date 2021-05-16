@@ -1,14 +1,15 @@
-const path = require( 'path' );
+const path = require('path');
 
 module.exports = {
     mode: 'production',
     entry: './src/index.ts',
     output: {
-        path: path.resolve( __dirname, 'dist' ),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'main.js',
     },
     resolve: {
-        extensions: [ '.ts', '.js' ],
+        extensions: ['.ts', '.js'],
+        fallback: { 'buffer': false }
     },
     module: {
         rules: [
@@ -18,5 +19,10 @@ module.exports = {
                 exclude: /node_modules/,
             }
         ]
+    },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 9000,
     }
 };
